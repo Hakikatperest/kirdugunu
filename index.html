@@ -453,6 +453,83 @@ footer .f-bottom{border-top:1px solid rgba(255,255,255,.08);padding-top:28px;fon
 .faq-a p{padding:0 0 26px;color:#6a6c5e;font-size:.98rem;line-height:1.8}
 .faq-item.open .faq-a{max-height:240px}
 
+/* ============ SİNEMATİK EKSTRA ANİMASYONLAR ============ */
+
+/* İmleç takipli parlama (hero) */
+.hero-glow{
+  position:absolute;width:600px;height:600px;border-radius:50%;z-index:1;pointer-events:none;
+  background:radial-gradient(circle,rgba(201,178,119,.18) 0%,transparent 60%);
+  transform:translate(-50%,-50%);transition:opacity .6s;opacity:0;mix-blend-mode:screen;
+}
+.hero:hover .hero-glow{opacity:1}
+
+/* Section başlıklarında kelime kelime açılma */
+.title-anim .w{
+  display:inline-block;opacity:0;transform:translateY(28px) skewY(4deg);
+  transition:opacity .7s cubic-bezier(.2,.7,.3,1),transform .7s cubic-bezier(.2,.7,.3,1);
+}
+.title-anim.in .w{opacity:1;transform:translateY(0) skewY(0)}
+.title-anim.in .w:nth-child(1){transition-delay:.05s}
+.title-anim.in .w:nth-child(2){transition-delay:.13s}
+.title-anim.in .w:nth-child(3){transition-delay:.21s}
+.title-anim.in .w:nth-child(4){transition-delay:.29s}
+.title-anim.in .w:nth-child(5){transition-delay:.37s}
+.title-anim.in .w:nth-child(6){transition-delay:.45s}
+.title-anim.in .w:nth-child(7){transition-delay:.53s}
+
+/* Kademeli galeri reveal (stagger) */
+.g-item{opacity:0;transform:translateY(40px) scale(.96);transition:opacity .9s cubic-bezier(.2,.7,.3,1),transform .9s cubic-bezier(.2,.7,.3,1)}
+.g-item.in{opacity:1;transform:translateY(0) scale(1)}
+
+/* Parallax katmanları */
+.parallax{will-change:transform}
+
+/* Yüzen dekoratif yapraklar (atmosfer) */
+.floaties{position:absolute;inset:0;overflow:hidden;pointer-events:none;z-index:1}
+.floaty{position:absolute;color:rgba(124,138,110,.18);font-size:1.4rem;animation:floatUp linear infinite}
+@keyframes floatUp{
+  0%{transform:translateY(110vh) rotate(0deg);opacity:0}
+  10%{opacity:1}
+  90%{opacity:1}
+  100%{transform:translateY(-10vh) rotate(360deg);opacity:0}
+}
+
+/* Buton parlama (shine) */
+.btn,.pkg-btn,.cta-phone{position:relative;overflow:hidden}
+.btn::after,.pkg-btn::after{
+  content:"";position:absolute;top:0;left:-120%;width:60%;height:100%;
+  background:linear-gradient(120deg,transparent,rgba(255,255,255,.35),transparent);
+  transform:skewX(-20deg);transition:left .6s ease;
+}
+.btn:hover::after,.pkg-btn:hover::after{left:140%}
+
+/* LIGHTBOX */
+.lightbox{
+  position:fixed;inset:0;z-index:9998;background:rgba(33,34,28,.94);
+  display:flex;align-items:center;justify-content:center;
+  opacity:0;visibility:hidden;transition:opacity .45s ease,visibility .45s ease;
+  backdrop-filter:blur(6px);
+}
+.lightbox.open{opacity:1;visibility:visible}
+.lightbox img{
+  max-width:88vw;max-height:84vh;border-radius:8px;box-shadow:0 30px 80px rgba(0,0,0,.5);
+  transform:scale(.92);transition:transform .45s cubic-bezier(.2,.7,.3,1);object-fit:contain;
+}
+.lightbox.open img{transform:scale(1)}
+.lb-close{position:absolute;top:30px;right:36px;width:46px;height:46px;cursor:pointer;border:none;background:none}
+.lb-close::before,.lb-close::after{content:"";position:absolute;top:50%;left:50%;width:26px;height:1.5px;background:var(--cream)}
+.lb-close::before{transform:translate(-50%,-50%) rotate(45deg)}
+.lb-close::after{transform:translate(-50%,-50%) rotate(-45deg)}
+.lb-nav{position:absolute;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;width:54px;height:54px;color:var(--cream);font-family:'Cormorant Garamond',serif;font-size:3rem;line-height:1;opacity:.7;transition:opacity .3s}
+.lb-nav:hover{opacity:1}
+.lb-prev{left:22px}.lb-next{right:22px}
+.g-item{cursor:zoom-in}
+.couple-card{cursor:zoom-in}
+
+@media(prefers-reduced-motion:reduce){
+  *{animation-duration:.001s!important;transition-duration:.001s!important}
+}
+
 /* ============ RESPONSIVE ============ */
 @media(max-width:900px){
   nav{position:fixed;top:0;right:-100%;width:75%;height:100vh;background:var(--olive);
@@ -515,7 +592,9 @@ footer .f-bottom{border-top:1px solid rgba(255,255,255,.08);padding-top:28px;fon
 <!-- ====== HERO ====== -->
 <section class="hero" id="hero">
   <div class="hero-fallback"></div>
-  <div class="hero-bg"></div>
+  <div class="hero-bg parallax" data-speed="0.3"></div>
+  <div class="hero-glow" id="heroGlow"></div>
+  <div class="floaties" id="heroFloaties"></div>
   <div class="hero-content">
     <span class="hero-eyebrow">Bodrum'un Kalbinde</span>
     <h1>
@@ -649,37 +728,37 @@ footer .f-bottom{border-top:1px solid rgba(255,255,255,.08);padding-top:28px;fon
     <p>Zeytinliklerden koy kenarlarına, Bodrum'un en güzel köşelerinde gerçekleşen düğünlerden kareler.</p>
   </div>
   <div class="gallery-grid">
-    <div class="g-item g-tall reveal-scale">
+    <div class="g-item g-tall">
       <img src="https://hakikatperest.github.io/kirdugunu/images/2.webp" alt="Zeytinlik kır düğünü töreni" loading="lazy" onerror="this.style.display='none';this.nextElementSibling.style.display='flex';">
       <div class="g-fallback" style="display:none">GÖRSEL 1</div>
       <div class="g-cap">Zeytinlik Töreni</div>
     </div>
-    <div class="g-item reveal-scale d1">
+    <div class="g-item">
       <img src="https://hakikatperest.github.io/kirdugunu/images/3.webp" alt="Düğün masa düzeni" loading="lazy" onerror="this.style.display='none';this.nextElementSibling.style.display='flex';">
       <div class="g-fallback" style="display:none">GÖRSEL 2</div>
       <div class="g-cap">Masa Düzeni</div>
     </div>
-    <div class="g-item reveal-scale d2">
+    <div class="g-item">
       <img src="https://hakikatperest.github.io/kirdugunu/images/4.webp" alt="Çiçek dekorasyonu" loading="lazy" onerror="this.style.display='none';this.nextElementSibling.style.display='flex';">
       <div class="g-fallback" style="display:none">GÖRSEL 3</div>
       <div class="g-cap">Çiçek Detayları</div>
     </div>
-    <div class="g-item g-wide reveal-scale d1">
+    <div class="g-item g-wide">
       <img src="https://hakikatperest.github.io/kirdugunu/images/5.webp" alt="Gün batımı düğün seremonisi" loading="lazy" onerror="this.style.display='none';this.nextElementSibling.style.display='flex';">
       <div class="g-fallback" style="display:none">GÖRSEL 4</div>
       <div class="g-cap">Gün Batımı Seremonisi</div>
     </div>
-    <div class="g-item reveal-scale d2">
+    <div class="g-item">
       <img src="https://hakikatperest.github.io/kirdugunu/images/6.webp" alt="Gece ışıklandırması" loading="lazy" onerror="this.style.display='none';this.nextElementSibling.style.display='flex';">
       <div class="g-fallback" style="display:none">GÖRSEL 5</div>
       <div class="g-cap">Işık Tasarımı</div>
     </div>
-    <div class="g-item reveal-scale">
+    <div class="g-item">
       <img src="https://hakikatperest.github.io/kirdugunu/images/7.webp" alt="Düğün ince detayları" loading="lazy" onerror="this.style.display='none';this.nextElementSibling.style.display='flex';">
       <div class="g-fallback" style="display:none">GÖRSEL 6</div>
       <div class="g-cap">İnce Dokunuşlar</div>
     </div>
-    <div class="g-item g-wide reveal-scale d1">
+    <div class="g-item g-wide">
       <img src="https://hakikatperest.github.io/kirdugunu/images/8.webp" alt="İlk dans" loading="lazy" onerror="this.style.display='none';this.nextElementSibling.style.display='flex';">
       <div class="g-fallback" style="display:none">GÖRSEL 7</div>
       <div class="g-cap">İlk Dans</div>
@@ -928,6 +1007,127 @@ document.querySelectorAll('.faq-q').forEach(btn=>{
 /* ===== HERO IMG CHECK (fallback gracefully) ===== */
 const heroImg=new Image();
 heroImg.src='https://hakikatperest.github.io/kirdugunu/images/Kir-Dugunu-Icin-Oneriler.webp';
+
+/* ===== KADEMELİ GALERİ REVEAL (stagger) ===== */
+const galleryItems=document.querySelectorAll('.g-item');
+const gio=new IntersectionObserver((entries)=>{
+  entries.forEach(e=>{
+    if(e.isIntersecting){
+      const idx=[...galleryItems].indexOf(e.target);
+      setTimeout(()=>e.target.classList.add('in'),(idx%4)*120);
+      gio.unobserve(e.target);
+    }
+  });
+},{threshold:.15});
+galleryItems.forEach(el=>gio.observe(el));
+
+/* ===== BAŞLIKLARDA KELİME KELİME AÇILMA ===== */
+document.querySelectorAll('.section-head h2, .why-content h2').forEach(h2=>{
+  // <em> içeriğini koru
+  const html=h2.innerHTML;
+  const parts=html.split(/(<em>.*?<\/em>)/g).filter(Boolean);
+  let out='';
+  parts.forEach(part=>{
+    if(part.startsWith('<em>')){
+      const inner=part.replace(/<\/?em>/g,'');
+      inner.split(' ').forEach(w=>{ if(w) out+=`<span class="w"><em>${w}</em></span> `;});
+    }else{
+      part.trim().split(' ').forEach(w=>{ if(w) out+=`<span class="w">${w}</span> `;});
+    }
+  });
+  h2.innerHTML=out;
+  h2.classList.add('title-anim');
+});
+const tio=new IntersectionObserver((entries)=>{
+  entries.forEach(e=>{ if(e.isIntersecting){ e.target.classList.add('in'); tio.unobserve(e.target);} });
+},{threshold:.4});
+document.querySelectorAll('.title-anim').forEach(el=>tio.observe(el));
+
+/* ===== PARALLAX ===== */
+const parallaxEls=document.querySelectorAll('.parallax');
+const heroBg=document.querySelector('.hero-bg');
+let parallaxReady=false;
+// Hero açılış zoom animasyonu (14sn) bitince parallax devralsın
+if(heroBg){
+  heroBg.addEventListener('animationend',()=>{parallaxReady=true;});
+  setTimeout(()=>{parallaxReady=true;},14500); // güvenlik
+}
+let ticking=false;
+window.addEventListener('scroll',()=>{
+  if(!ticking){
+    requestAnimationFrame(()=>{
+      const y=window.scrollY;
+      parallaxEls.forEach(el=>{
+        if(el===heroBg && !parallaxReady)return; // zoom bitmeden dokunma
+        const speed=parseFloat(el.dataset.speed)||0.3;
+        el.style.transform=`translateY(${y*speed}px) scale(1.12)`;
+      });
+      ticking=false;
+    });
+    ticking=true;
+  }
+});
+
+/* ===== HERO İMLEÇ-TAKİPLİ PARLAMA ===== */
+const hero=document.querySelector('.hero');
+const glow=document.getElementById('heroGlow');
+hero.addEventListener('mousemove',e=>{
+  const r=hero.getBoundingClientRect();
+  glow.style.left=(e.clientX-r.left)+'px';
+  glow.style.top=(e.clientY-r.top)+'px';
+});
+
+/* ===== YÜZEN YAPRAK ATMOSFERİ ===== */
+const floatBox=document.getElementById('heroFloaties');
+if(floatBox){
+  const leaves=['❦','✿','❀','✤'];
+  for(let i=0;i<10;i++){
+    const s=document.createElement('span');
+    s.className='floaty';
+    s.textContent=leaves[i%leaves.length];
+    s.style.left=Math.random()*100+'%';
+    s.style.fontSize=(0.9+Math.random()*1.4)+'rem';
+    s.style.animationDuration=(14+Math.random()*16)+'s';
+    s.style.animationDelay=(Math.random()*12)+'s';
+    floatBox.appendChild(s);
+  }
+}
+
+/* ===== LIGHTBOX ===== */
+const lbImages=[...document.querySelectorAll('.g-item img, .couple-card img')];
+const lb=document.createElement('div');
+lb.className='lightbox';
+lb.innerHTML='<button class="lb-close" aria-label="Kapat"></button><button class="lb-nav lb-prev" aria-label="Önceki">‹</button><img alt="Galeri görseli"><button class="lb-nav lb-next" aria-label="Sonraki">›</button>';
+document.body.appendChild(lb);
+const lbImg=lb.querySelector('img');
+let lbIndex=0;
+function openLb(i){
+  lbIndex=i;
+  lbImg.src=lbImages[i].src;
+  lb.classList.add('open');
+  document.body.style.overflow='hidden';
+}
+function closeLb(){lb.classList.remove('open');document.body.style.overflow='';}
+function navLb(dir){
+  lbIndex=(lbIndex+dir+lbImages.length)%lbImages.length;
+  lbImg.style.opacity=0;
+  setTimeout(()=>{lbImg.src=lbImages[lbIndex].src;lbImg.style.opacity=1;},150);
+}
+lbImages.forEach((img,i)=>{
+  // sadece gerçekten yüklenmiş (görünür) görsellerde lightbox aç
+  img.parentElement.addEventListener('click',()=>{ if(img.style.display!=='none') openLb(i); });
+});
+lb.querySelector('.lb-close').addEventListener('click',closeLb);
+lb.querySelector('.lb-prev').addEventListener('click',e=>{e.stopPropagation();navLb(-1);});
+lb.querySelector('.lb-next').addEventListener('click',e=>{e.stopPropagation();navLb(1);});
+lb.addEventListener('click',e=>{if(e.target===lb)closeLb();});
+document.addEventListener('keydown',e=>{
+  if(!lb.classList.contains('open'))return;
+  if(e.key==='Escape')closeLb();
+  if(e.key==='ArrowLeft')navLb(-1);
+  if(e.key==='ArrowRight')navLb(1);
+});
+lbImg.style.transition='opacity .3s ease';
 </script>
 </body>
 </html>
